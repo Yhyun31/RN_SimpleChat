@@ -18,6 +18,7 @@ export const theme={
     btnBackground: colors.main,
     btnTitle: colors.white,
     btnTextLink: colors.main,
+    btnSignout: colors.red,
 
     //Image
     imgBackground: colors.grey,
@@ -29,4 +30,23 @@ export const theme={
     inputLabel: colors.grey_1,
     inputPlaceholder: colors.grey_1,
     inputBorder: colors.grey_1,
+    inputDisabled: colors.grey,
+
+    //Spinner
+    spinnerBackground: colors.black,
+    spinnerIndicator: colors.white,
+
+    //Tab
+    tabBtnActive: colors.main,
+    tabBtnInactive: colors.grey_1,
+
+    //List-Item
+    itemBorder: colors.grey,
+    itemTime: colors.grey_1,
+    itemDesc: colors.grey_1,
+    itemIcon: colors.text,
+
+    //Chat
+    sendBtnActive: colors.main,
+    sendBtnInactive: colors.grey_1,
 };

@@ -2,6 +2,8 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithEmailAndPassword,createUserWithEmailAndPassword,updateProfile} from 'firebase/auth';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import config from '../firebase.json';
+import { getFirestore,collection,doc,setDoc,addDoc } from 'firebase/firestore';
+
 
 const app=initializeApp(config);
 
@@ -19,7 +21,7 @@ export const signin = async({email,password})=>{
 const uploadImage=async (uri) => {
     if(uri.startsWith('https')) {
         return uri;
-    }//uri가 'https'로 시작하면 업로드할 필요x
+    }//uri가 'https'로 시작하면 업로드할 필요x -> 기존 url 그대로 사용
 
     const blob = await new Promise((resolve,reject)=>{
         const xhr = new XMLHttpRequest();
@@ -36,7 +38,7 @@ const uploadImage=async (uri) => {
     await uploadBytes(imageRef, blob);
     blob.close();
 
-    return await getDownloadURL(imageRef);
+    return await getDownloadURL(imageRef); 
 };
 
 export const signup=async({name,email,password,photo})=>{
@@ -45,3 +47,47 @@ export const signup=async({name,email,password,photo})=>{
     await updateProfile(user,{displayName: name, photoURL});
     return user;
 };
+
+export const getCurrentUser = () => {
+    const {uid,displayName,email,photoURL}=auth.currentUser;
+    return {uid, name:displayName,email, photo:photoURL};
+};
+
+export const updateUserInfo=async photo =>{
+    const photoURL= await uploadImage(photo);
+    await auth.currentUser.updateProfile({photoURL});
+    return photoURL;
+};
+
+export const signout=async ()=>{
+    await auth.signOut();
+    return{};
+};
+
+const DB=getFirestore(app);
+
+export const createChannel = async ({ title, desc }) => {
+    const newChannelRef = doc(collection(DB, "channels")); // 자동 ID 생성
+    const id = newChannelRef.id;
+    const newChannel = {
+        id,
+        title,
+        description: desc,
+        createdAt: Date.now(),
+    };
+    await setDoc(newChannelRef, newChannel);
+    return id;
+};
+export {DB};
+
+
+
+export const createMessage = async ({ channelId, message }) => {
+   
+       await setDoc(doc(DB, "channels", channelId, "messages", message._id), {
+          ...message,
+          createdAt: Date.now()
+       });
+ 
+       
+ };
